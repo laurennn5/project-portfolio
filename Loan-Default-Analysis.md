@@ -29,6 +29,10 @@ summary(cars)
 
 You can also embed plots, for example:
 
+``` r
+plot(pressure)
+```
+
 ![](Loan-Default-Analysis_files/figure-gfm/pressure-1.png)<!-- -->
 
 Note that the `echo = FALSE` parameter was added to the code chunk to
