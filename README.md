@@ -1,4 +1,4 @@
-### Project Overview - Loan Default Analysis
+## Project Overview - Loan Default Analysis
 This project was completed as part of the Elements of Statistical Methods course at the University of Washington. The dataset was provided by the instructor, containing borrower-level information. Motivated by the goal of applying statistical methods to real-world applications, the project showcases the process of building a model to predict loan default in R.
 
 ### Dataset Description
