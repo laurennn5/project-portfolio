@@ -1,1 +1,1 @@
-The loan default analysis project builds a predictive logistic regression model for loan defaulting. Throughout the projcect, it uses the Akaike Information Criterion (AIC) score to compare multiple models and select the one that best balances goodness-of-fit with simplicity.
+The loan default analysis project builds a predictive logistic regression model for loan defaulting. Throughout the project, it uses the Akaike Information Criterion (AIC) score to compare multiple models and select the one that best balances goodness-of-fit with simplicity.
