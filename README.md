@@ -18,4 +18,4 @@ Developed an interactive text-based Java game in which players navigate a map, e
 
 **Skills:** Java, object-oriented programming, game logic, user interaction
 
-[View the Pokémon Text-Based Game](./Pokemon-Text-Game)
+[View the Pokémon Game](./Pokemon-Text-Game)
