@@ -1,61 +1,123 @@
 public class Wild {
-	private int hearts;
-	private String description;
-	private Type type;
-	private String [] moves;
-	
-	
-	public Wild(Type type, String description, String [] moves, int hearts) {
-		this.type = type;
-		this.description = description;
-		this.moves = moves;
-		this.hearts = hearts;
-	}
-	public String toString() {
-		return "Type: " + this.type + " // Description: " + this.description + 
-				" // Moves: " + String.join(", ", this.moves) + " // Hearts: " + this.hearts;
-	}
-	
-	public void setHearts (Wild other) {
-		switch (this.type) {
-			case Type.Fire: if(other.type == Type.Water) { //fire is weak against water, strong against grass
-							other.hearts +=2;
-							this.hearts = 3;
-							break;
-						} else if (other.type == Type.Grass) {
-							this.hearts +=2;
-							other.hearts = 3;
-							break;
-						}
-			case Type.Grass: if (other.type == Type.Fire) { //grass is weak against fire, strong against fighting and water
-							other.hearts += 2;
-							this.hearts = 3;
-							break;
-						} else if (other.type == Type.Fighting || other.type == Type.Water) {
-							this.hearts +=2;
-							other.hearts = 3;
-							break;
-						}
-						break;
-			case Type.Water: if (other.type == Type.Grass || other.type == Type.Electric) {//water is weak against grass and electric, strong against fire 
-							other.hearts +=2;
-							this.hearts = 3;
-							break;
-						} else if (other.type == Type.Fire) {
-							this.hearts += 2;
-							other.hearts = 3;
-							break;
-						}
-			default:
-				this.hearts = 3;
-				other.hearts = 3;
-				break;
-		}
-		
-	}
-	public void damage () {
-		if (this.hearts > 0) {
-			this.hearts -= 1;
-		}
-	}
+    private String name;
+    private int hearts;
+    private String description;
+    private Type type;
+    private String[] moves;
+
+    public Wild(
+            String name,
+            Type type,
+            String description,
+            String[] moves,
+            int hearts) {
+
+        this.name = name;
+        this.type = type;
+        this.description = description;
+        this.moves = moves;
+        this.hearts = hearts;
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + name
+                + " // Type: " + type
+                + " // Description: " + description
+                + " // Moves: " + String.join(", ", moves)
+                + " // Hearts: " + hearts;
+    }
+
+    /*
+     * Both Pokémon normally begin with 3 hearts.
+     * The Pokémon with the type advantage receives 5 hearts.
+     */
+    public void setHearts(Wild other) {
+        this.hearts = 3;
+        other.hearts = 3;
+
+        switch (this.type) {
+            case Fire:
+                if (other.type == Type.Grass) {
+                    this.hearts = 5;
+                } else if (other.type == Type.Water) {
+                    other.hearts = 5;
+                }
+                break;
+
+            case Grass:
+                if (other.type == Type.Water
+                        || other.type == Type.Fighting) {
+                    this.hearts = 5;
+                } else if (other.type == Type.Fire) {
+                    other.hearts = 5;
+                }
+                break;
+
+            case Water:
+                if (other.type == Type.Fire) {
+                    this.hearts = 5;
+                } else if (other.type == Type.Grass
+                        || other.type == Type.Electric) {
+                    other.hearts = 5;
+                }
+                break;
+
+            case Fighting:
+                /*
+                 * No special Fighting relationships are currently defined.
+                 */
+                break;
+
+            case Electric:
+                if (other.type == Type.Water) {
+                    this.hearts = 5;
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    public void damage() {
+        if (hearts > 0) {
+            hearts--;
+        }
+    }
+
+    public boolean hasFainted() {
+        return hearts <= 0;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getHearts() {
+        return hearts;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public String[] getMoves() {
+        return moves;
+    }
+
+    public String getRandomMove() {
+        int randomIndex = (int) (Math.random() * moves.length);
+        return moves[randomIndex];
+    }
+
+    public boolean hasMove(String selectedMove) {
+        for (String move : moves) {
+            if (move.equalsIgnoreCase(selectedMove)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
