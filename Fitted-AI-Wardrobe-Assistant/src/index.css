@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* ===========================================
+     GLOBAL COLOR SYSTEM - Single Source of Truth
+     Official UW Brand Colors + Extended Palette
+
+     FORMAT: Space-separated RGB values (no rgb() wrapper)
+     This enables Tailwind's opacity modifiers: bg-uw-purple/90
+     =========================================== */
+
+  /* Primary Brand - Purple (Official UW #4b2e83 = rgb(75, 46, 131)) */
+  --uw-purp: 75 46 131;
+  --uw-purp-light: 114 81 172;
+  --uw-purp-dark: 58 35 102;
+  --uw-purp-50: 246 243 251;
+  --uw-purp-100: 237 231 246;
+  --uw-purp-200: 212 197 232;
+  --uw-purp-300: 179 156 217;
+  --uw-purp-400: 137 104 186;
+  --uw-purp-500: 75 46 131;
+  --uw-purp-600: 63 38 112;
+  --uw-purp-700: 58 35 102;
+  --uw-purp-800: 45 27 78;
+  --uw-purp-900: 31 19 55;
+
+  /* Accent - Gold (Official UW #b7a57a = rgb(183, 165, 122)) */
+  --uw-gold: 183 165 122;
+  --uw-gold-light: 212 197 160;
+  --uw-gold-dark: 143 125 86;
+  --uw-gold-50: 250 248 243;
+  --uw-gold-100: 245 240 229;
+  --uw-gold-200: 232 221 199;
+  --uw-gold-300: 212 197 160;
+  --uw-gold-400: 197 178 141;
+  --uw-gold-500: 183 165 122;
+  --uw-gold-600: 160 144 95;
+  --uw-gold-700: 143 125 86;
+  --uw-gold-800: 109 95 63;
+  --uw-gold-900: 74 64 41;
+
+  /* Neutrals - Refined grayscale */
+  --app-black: 26 26 26;
+  --app-grey-dark: 61 61 61;
+  --app-grey: 107 107 107;
+  --app-grey-light: 156 163 175;
+  --app-grey-lighter: 229 231 235;
+  --app-grey-lightest: 243 244 246;
+  --app-white: 255 255 255;
+
+  /* Shadow Colors (pre-composed rgba - used directly in box-shadow) */
+  --shadow-gold: rgba(183, 165, 122, 0.35);
+  --shadow-gold-strong: rgba(183, 165, 122, 0.45);
+  --shadow-purple: rgba(75, 46, 131, 0.25);
+  --shadow-purple-subtle: rgba(75, 46, 131, 0.15);
+  --shadow-dark: rgba(0, 0, 0, 0.15);
+
+  /* CTA Button Shadows (composite) */
+  --cta-shadow: 0 6px 20px rgba(183, 165, 122, 0.3), 0 2px 6px rgba(0, 0, 0, 0.15);
+  --cta-shadow-hover: 0 10px 35px rgba(183, 165, 122, 0.45), 0 2px 8px rgba(75, 46, 131, 0.15);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* ===========================================
+   REUSABLE COMPONENT CLASSES
+   DRY pattern: Define once, use everywhere
+   Handles both light and dark mode hover states
+   =========================================== */
+@layer components {
+  /* Selector Card - Generation mode buttons, time slots */
+  .selector-card {
+    @apply p-4 rounded-xl border-2 transition-all
+           border-gray-200 dark:border-gray-700
+           hover:border-uw-purple dark:hover:border-uw-purple;
+  }
+
+  .selector-card-selected {
+    @apply border-uw-purple bg-purple-50 dark:bg-purple-900/20;
+  }
+
+  /* Selector Chip - Smaller grid items (occasions, locations) */
+  .selector-chip {
+    @apply p-3 rounded-xl border-2 text-sm font-medium transition-all
+           border-gray-200 dark:border-gray-700
+           text-gray-700 dark:text-gray-300
+           hover:border-uw-purple dark:hover:border-uw-purple;
+  }
+
+  .selector-chip-selected {
+    @apply border-uw-purple bg-purple-50 dark:bg-purple-900/20 text-uw-purple;
+  }
+}
+
+/* Prevent FOUC (Flash of Unstyled Content) */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
