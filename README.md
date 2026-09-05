@@ -12,9 +12,9 @@ Developed an interactive text-based Java game in which players navigate a map, e
 
 [View the Pokémon Game](./Pokemon-Text-Game)
 
-### Loan Default Analysis
+### Loan Default Risk Modeling
 
-Built a logistic regression model in R to analyze borrower characteristics associated with loan default. The project includes exploratory analysis, variable selection using AIC and statistical significance, model interpretation, and discussion of limitations.
+Built a logistic regression model in R to analyze borrower characteristics associated with loan default. The project includes exploratory analysis, stepwise selection using AIC and statistical significance, model interpretation, and discussion of limitations.
 
 **Skills:** R, logistic regression, statistical modeling, data visualization, model interpretation
 
