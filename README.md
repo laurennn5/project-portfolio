@@ -19,3 +19,7 @@ Built a logistic regression model in R to analyze borrower characteristics assoc
 **Skills:** R, logistic regression, variable selection, data visualization, model interpretation
 
 [View the Loan Default Analysis](./Loan-Default-Analysis)
+
+### Fitted - AI Wardrobe Assistant
+
+
