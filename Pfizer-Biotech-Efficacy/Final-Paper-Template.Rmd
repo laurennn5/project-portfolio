@@ -1,0 +1,692 @@
+---
+title: "BNT162b2 Vaccine Efficacy: Frequentist vs Bayesian Approaches"
+author: 'Kian Sharifzadeh, Krish Doshi, Lauren Yee'
+date: '`r Sys.Date()`'
+output: pdf_document
+urlcolor: blue
+header-includes:
+- \usepackage{amsmath,amsfonts,amssymb}
+- \usepackage{setspace} \doublespacing
+- \usepackage{colortbl}
+- \usepackage{float}
+- \usepackage{graphicx}
+- \usepackage{booktabs}
+- \usepackage{hyperref}
+- \usepackage{caption}
+- \usepackage{subcaption}
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+#Use this code chunk to include libraries, and set global options.
+#install.packages("janitor")
+knitr::opts_chunk$set(echo = TRUE, warnings=FALSE, message=FALSE)
+library(tidyverse)
+library(MASS)
+library(janitor)
+library(fastR2)
+library(patchwork)
+options(warn = -1)
+```
+
+```{r label='data', echo=FALSE, include=FALSE}
+data <- data.frame("Covid_Case" = c(8, 162, 170), 
+                   "No_Covid_Case" = c(17403, 17349, 34752), 
+                   "Total"= c(17411, 17511, 34922))
+row.names(data) <- c("BNT162b2", "Placebo", "Total")
+extended_df <- data.frame("Treatment"=c(rep("BNT162b2", 17411), 
+                                        rep("Placebo", 17511)), 
+                          "Has_Covid" = c(rep("Yes", 8), rep("No", 17403), 
+                                          rep("Yes", 162), rep("No", 17349)))
+
+```
+
+# Abstract
+
+Following the declaration of the COVID-19 pandemic, the U.S. Food and Drug Administration (FDA) granted Emergency Use Authorization (EUA) for Pfizer and BioNTech’s two-dose COVID-19 vaccine. This report evaluates the efficacy of the Pfizer-BioNTech vaccine (BNT162b2) using both Frequentist and Bayesian inference frameworks by computing the maximum likelihood estimate (MLE) and exploring various priors to obtain posterior distributions and Bayesian p-values. Clinical trial data with 170 confirmed infections included 8 in the vaccinated group and 162 in the placebo group. The MLE for vaccine efficacy was approximately 0.95, and the 95% large sample confidence interval was [91.56%, 98.57%]. Both likelihood ratio and Bayesian hypothesis tests produced p-values approximately equal to zero. These results provide strong evidence that the vaccine efficacy exceeds the FDA threshold of 30% and remain consistent across a range of prior assumptions.
+
+# Keywords
+
+*Bayesian Inference*, *Maximum Likelihood Estimation*, *BNT162b2*, *Efficacy*
+
+\newpage
+
+# Introduction / Background
+
+On March 11, 2020, COVID-19 was declared a pandemic by the World Health Organization (David J. Sencer CDC Museum). The disease affected tens of millions of people worldwide and urged the production of safe and effective vaccines to prevent additional consequences. Shortly after the declaration, major pharmaceutical companies raced to develop vaccines against the virus, including the Pfizer-BioNTech vaccine (BNT162b2) examined in this report. Along with its unprecedented use of mRNA and pace of development in about 10 months compared to the typical vaccine that takes 10 to 15 years, the efficacy rate easily passed the FDA standard (Kashte, Shivaji, et al.). Specifically, the original article states that the "95.0% credible interval for vaccine efficacy and the probability of vaccine efficacy greater than 30% were calculated with the use of a Bayesian beta-binomial model" (Polack, Fernando P., et al.). To explore the BNT162b2 vaccine findings further, we conduct analyses with Frequentist and Bayesian methods for inference.
+
+```{r label="table", echo=FALSE, fig.height = 4, fig.width = 4, fig.align="center"}
+extended_df %>% 
+tabyl(Treatment, Has_Covid) %>%
+adorn_totals(where = c("row", "col")) %>%
+adorn_title() 
+```
+
+
+``` {r label="barplot", echo=FALSE, fig.height = 3, fig.width = 4, fig.align="center"}
+ggplot(data = extended_df, mapping=aes(x=Has_Covid, fill=Treatment)) +
+  geom_bar(position="fill") + 
+  scale_fill_manual(values = c("lightblue", "#F5F5F5")) + 
+  theme_minimal() + labs(
+    title="Relative Percentage of COVID-19 \nCases per Treatment Group",
+    caption="Sourced from \"Safety and Efficacy of \nthe BNT162b2 mRNA 
+    Covid-19 Vaccine\"",
+    y = "Percentage",
+    x = "Has Covid"
+  )
+```
+
+When observing the data, we notice a couple things. First of all, there are far more cases of COVID-19 in the Placebo group (162) than in the treatment group (8). When comparing the percentage, about `r 100*round(162/17511,4)`\% of people in the Placebo group have COVID-19 versus `r 100*round(8/17411,4)`\% in the Treatment Group. In total, there are 170 cases of COVID-19, which is about `r 100*round(170/34922,4)`\%. Overall, we can see that the number of people in the treatment group and the placebo group are approximately equal. This allows us to treat the randomization as 1:1.
+
+In the original paper, the authors mention that they used a beta binomial model with the transformation $$\pi = \frac{\pi_v}{\pi_v + \pi_p}$$ where $\pi_v$ and $\pi_p$ are the probabilities of an infection in the vaccine and placebo groups respectively (Polack, Fernando P., et al.). Here, the binomial $\pi$ was modeled with a beta prior, Beta(0.700102, 1), and the parameter of interest was $\psi = \frac{1 - 2\pi}{1 - \pi}$. It was estimated to be 0.95 with the 95% Bayesian credible interval reported as [90.3%, 97.6%] and the posterior probability that vaccine efficacy exceeded 30% was larger than 0.999.
+
+# Statistical Methods
+
+## Model
+
+Deriving from the original report, we let $T \sim Binom(170, \pi)$, where $\pi$ is equivalent to P(Vaccine|Infection). T denotes the number of COVID-19 cases in the vaccine group out of the 170 COVID-19 cases in the sample. Since we treat our randomization as 1:1, we can rewrite P(Vaccine|Infection) as $\pi = \frac{\pi_{v}}{\pi_{v} + \pi_{p}}$. Our parameter of interest is $\psi$, which is equal to $1 -\frac{\pi_v}{\pi_p} = \frac{\pi_p - \pi_v}{\pi_p}$. Using our value of $\pi$, we can rewrite $\psi$ as $\frac{1-2\pi}{1-\pi}$.
+
+\begin{center}
+
+$\frac{1-2\pi}{1-\pi} = \frac{1 - 2(\frac{\pi_{v}}{\pi_{v} + \pi_{p}})}{1- \frac{\pi_{v}}{\pi_{v} + \pi_{p}}}$
+
+$= \frac{\pi_v + \pi_p - 2\pi_v}{\pi_v + \pi_p - \pi_v}$
+
+$= \frac{\pi_p - \pi_v}{\pi_p}$
+
+$ = \psi$
+
+\end{center}
+
+Let $t$ be the number of COVID-19 infections from the vaccine group. We observe $t = 8$ and want to test: $H_0: \psi = 0.3$, $H_1: \psi > 0.3$.
+
+## Likelihood Inference
+
+### Maximum Likelihood Estimator
+
+Even though the original study applied a Bayesian framework, we considered a Frequentist approach to determine whether it would lead to similar conclusions about the data. The first method considered in likelihood inference is maximum likelihood, which identifies the values of the model parameters that makes our data most likely. 
+
+For maximum likelihood, we need to find a likelihood function for $\psi$ and the maximum likelihood estimator of $\psi_0$. To find our likelihood function $L^{\ast}(\psi)$, we use Theorem 11.1. This states how the likelihood function for a discrete random variable $X$, parameterized by $\theta$, is $L(\theta) = P_{\theta}(X = x_{obs})$, where $x_{obs}$ is our observed data. Since $T$ follows the binomial distribution, the likelihood function in terms of $\pi$ is $L^{\ast}(\pi)  = \binom{n}{t} (\pi)^{t} \times (1-\pi)^{n-t}$. In this case, $n$ represents the number of people included in the sample and $t$ is the number of people infected with COVID-19. To get $L^{\ast}(\psi)$, we must find $\pi$ in terms of $\psi$ and replace the respective $\pi$ values. Starting from the parameterization $\frac{1-2\pi}{1-\pi} = \psi$:
+
+\begin{center}
+
+$1-2\pi = \psi(1-\pi)$
+
+$1-2\pi = \psi-\psi\pi$
+
+$1-\psi = \pi(2 -\psi)$
+
+$\pi = \frac{1 -\psi}{2 -\psi}$
+
+\end{center}
+
+With $\pi$ in terms of $\psi$, we get the likelihood function: $L^{\ast}(\psi) = \binom{n}{t} (\frac{1 -\psi}{2 -\psi})^{t} \times (1-\frac{1 -\psi}{2 -\psi})^{n-t}$
+
+Now that we have the likelihood function of $\psi$, the next step is to solve for the maximum likelihood estimator (MLE) of $\psi$, $\hat{\psi}^{mle}$. Definition 11.3 explains how the maximum likelihood estimator of the true, unknown parameter value is the value that makes the likelihood function the largest. To determine this value, we find the log-likelihood function of $L^{\ast}(\psi)$, denoted as $\ell(\psi)$. $\ell{(\psi)}$ is preferred since it is easier to differentiate and has the maximum at the same $\psi$ location as $L^{\ast}(\psi)$.
+
+\begin{center}
+
+$\ell(\psi) = \ln{\left[\binom{n}{t} (\frac{1 -\psi}{2 -\psi})^{t}\right]} + \ln\left[{(1-\frac{1 -\psi}{2 -\psi})^{n-t}}\right]$
+
+$\ell(\psi) = \ln{\binom{n}{t}} + t\ln{(1-\psi)} -t\ln{(2 - \psi)} + (n-t)\ln{(\frac{2-\psi - (1-\psi)}{2-\psi})}$
+
+$\ell(\psi) = \ln{\binom{n}{t}} + t\ln{(1-\psi)} -t\ln{(2 - \psi)}  + (n-t)\ln{1} - (n-t)\ln{(2-\psi)}$
+
+\end{center}
+
+Now that we have obtained $\ell{(\psi)}$, we take the first derivative with respect to $\psi$. This is a method that helps us maximize the function, where setting the first derivative of the log-likelihood function equal to 0 allows us to find a critical point, specifically a potential MLE.
+
+\begin{center}
+
+$\frac{d}{d \psi}\ell(\psi) = 0 - \frac{t}{1-\psi} + \frac{t}{2-\psi} + \frac{n-t}{2-\psi} = -\frac{t}{1-\psi} + \frac{t + (n-t)}{2-\psi}$
+
+$\frac{d}{d \psi}\ell(\psi) = -\frac{t}{1-\psi} + \frac{n}{2-\psi}$
+
+Setting $\frac{d}{d \psi}\ell(\psi) = 0$: $-\frac{t}{1-\psi} + \frac{n}{2-\psi} = 0$
+
+$\frac{t}{1-\psi} = \frac{n}{2-\psi}$
+
+$2t - t\psi = n - n\psi$
+
+$n- 2t = \psi(n - t)$
+
+Therefore, $\boxed{\hat{\psi}^{mle} = \frac{n - 2t}{n-t}}$, which can also be rewritten as $\frac{1 - 2\hat{\pi}^{mle}}{1 - \hat{\pi}^{mle}}$.
+
+\end{center}
+
+To check if $\hat{\psi}^{mle}$ is truly a maximum, we perform the 2nd derivative test to observe whether the 2nd derivative is less than 0:
+
+$\frac{d^2}{d \psi^2}\ell(\psi) = \frac{t}{(1-\psi)^2} -\frac{n}{(2-\psi)^2}$
+
+Depending on the values of $n$ and $t$, the 2nd derivative of the log-likelihood function may not be negative. Therefore, our estimate is not guaranteed to be a global maximum. In our case, $\frac{d^2}{d \psi^2}\ell(\hat{\psi}^{mle})$ is negative, which means $\hat{\psi}^{mle}$ is a \fbox{Local Maximum}.
+
+### Confidence Interval
+
+We can calculate the confidence interval for $\psi_0$ in two different ways.
+
+\textbf{Large Sample Confidence Interval: }The first method is to calculate the large sample confidence interval. First, we establish that for large $n$ values under certain regularity conditions, $\hat{\psi_0}^{mle} \approx Norm(\psi_0, \frac{1}{\sqrt{I(\hat{\psi}^{mle})}})$, where $I(\psi_0) = E\left[-\frac{d^2}{d\psi^2}\ell(\psi)\right] \vert_{\psi = \psi_0}$. This is based on Theorem 12.1. Some of the regularity conditions include that the possible values for the observed value does not depend on the parameter and the true value of the parameter does not fall on a boundary.
+
+```{r label="mle_graph", echo=FALSE, warnings=FALSE, message=FALSE, fig.width=8, fig.height=3.5}
+loglik.psi<-function(psi,x, n){
+  if(psi >= 1) NA
+  else{  
+    log(choose(n, x)) + x*log(1-psi) - x*log(2-psi) +(n-x)*log(1 / (2-psi))
+  }
+}
+
+ml.psi <- maxLik2(loglik=loglik.psi,
+start = 0.3, x = 8,n = 170)
+
+psi.plot <- plot(ml.psi) +
+labs(title = "Second order approximation for \nPsi (Parametrization for Pi)",
+subtitle = "n = 170, t = 8",
+x = expression(psi))
+
+loglik.pi<-function(pi,x, n){
+  if(pi < 0 || pi > 1) NA
+  else{  
+    log(choose(n, x)) + x*log(pi) +(n-x)*log(1 - pi)
+  }
+}
+
+ml.pi <- maxLik2(loglik=loglik.pi,
+start = 0.3, x = 8,n = 170)
+
+pi.plot <- plot(ml.pi) +
+labs(title = "Second order approximation for Pi",
+subtitle = "n = 170, t = 8",
+x = expression(pi))
+
+psi.plot + pi.plot
+```
+
+Since the 2nd order Taylor series approximates the log-likelihood function around MLE, we can assume that the regularity conditions for the expected Fisher information are satisfied. Additionally, since MLEs are invariant, we can say that the regularity condition is met for the expected Fisher information of $\psi$ as well. After establishing $\hat{\psi_0}^{mle} \approx Norm(\psi_0, \frac{1}{\sqrt{I(\psi_0)}})$, we can calculate a $100(1-\alpha)\%$ large sample confidence interval $\psi_0$ using the equation $\hat{\psi}^{mle} \pm z_{\alpha/2} \hat{SE}$, where $\hat{SE} = \frac{1}{\sqrt{I(\hat{\psi}^{mle})}}$.
+
+\begin{center}
+
+Using the fact that $\frac{d^2}{d \psi^2}\ell(\psi) = -\frac{t}{(1-\psi)^2} + \frac{n}{(2-\psi)^2}$, we can solve $I(\psi_0)$
+
+\end{center}
+
+$E\left[-(-\frac{T}{(\psi - 1)^2} + \frac{n}{(\psi - 2)^2} )\right] = \frac{E\left[T\right]}{(1-\psi)^2} - \frac{n}{(2-\psi)^2} \qquad \text{Thm 2.1.1 (Linearity of Expectation)}$
+
+$E[T] = n\pi = n\frac{1-\psi}{2-\psi}$
+
+$I(\hat{\psi}^{mle}) = n\frac{1-\psi}{2-\psi} \cdot \frac{1}{{(1-\psi)^2}} -\frac{n}{(2-\psi)^2}$
+
+$=\frac{n}{(2-\psi)(1-\psi)}- \frac{n}{(2-\psi)^2}$
+
+$=\frac{n(2-\psi)}{(2-\psi)^2(1-\psi)} - \frac{n(1-\psi)}{(2-\psi)^2(1-\psi)}$
+
+$=\frac{n}{(2-\psi)^2(1-\psi)}$
+
+\begin{center}
+
+Since we got $I(\hat{\psi}^{mle})$, our standard error is $\frac{1}{\sqrt{\frac{n}{(2-\psi)^2(1-\psi)}}} = \sqrt{\frac{(2-\psi)^2(1-\psi)}{n}}$.
+
+\end{center}
+
+
+
+\textbf{Parametric Bootstrap Percentile Interval: }The second method of finding the confidence interval for $\psi_0$ is calculating an interval using the parametric bootstrap. First, we take a plethora of COVID-19 infected values from the binomial model at a large sample size and infected probability. Then, we find $\hat{\pi}^{mle}$ values and use them to calculate $\hat{\psi}^{mle}$ values using the equation $\hat{\psi}^{mle} = \frac{1 - 2\hat{\pi}^{mle}}{1 - \hat{\pi}^{mle}}$. To construct the percentile interval, we calculate the mean and standard deviation of the combined $\hat{\psi}^{mle}$ values. We use the equation $\hat{\psi}^{mle} \pm z_{\alpha/2} \hat{SE}$ for the interval, where the mean of the values represents $\hat{\psi}^{mle}$ and the standard deviation represents $\hat{SE}$.
+
+### Significance Testing for $\psi_0$
+
+The test statistic we will use when doing significance testing for $\psi_0$ is the likelihood ratio test statistic, or W. The likelihood ratio statistic is calculated by $W = 2\ln\Lambda$, which is equivalent to $2\ln(\frac{L(\hat{\psi}^{mle})}{L(\hat{\psi}^{null})}) = 2\left[\ln{L(\hat{\psi}^{mle})} - \ln{L(\hat{\psi}^{null})}\right]$. For our test, $H_0: \psi_0 = 0.3$, which means $\hat{\psi}^{null} = 0.3$. The likelihood ratio test statistic becomes: $W = 2\left[\ln{L(\hat{\psi}^{mle})} - \ln{L(0.3)}\right]$. We can find the p-value in 2 different ways
+
+\textbf{Chi-Square Distribution: }For large samples under the null hypothesis, $W \approx \chi^2_{1}$. Using a Chi-Square distribution to perform this test, we will be testing $H_1: \psi_0 \ne 0.3$. To compute the p-value, we calculate using the likelihood ratio test statistic under the Chi-Square distribution with $df = 1$.
+
+\textbf{Empirical P-value: }The empirical p-value is calculated by generating a large number of samples from the null hypothesis of $H_0: \psi_0 = 0.3$. By finding the empirical p-value via bootstrapping, we are testing $H_1: \psi_0 > 0.3$. For the generated samples, calculate $\hat{\psi}^{mle}$ and the likelihood ratio test statistic $W^{\ast}$ for each of them. Finally, count the fraction of times a $W^{\ast}$ from our generated samples is larger than the observed $W$.
+
+## Bayesian Inference
+While the original paper used a minimally informative Beta(0.700102, 1) prior, we further investigate the robustness of this conclusion by conducting a sensitivity analysis based on different pairs of apriori beliefs about $\psi$.
+
+$$P(\psi \geq 0.3) = P\left(\frac{1 - 2\pi}{1 - \pi} \geq 0.3\right)$$
+$$= P(1 - 2\pi \geq 0.3(1 - \pi))$$
+$$= P(1 - 2\pi \geq 0.3 - 0.3\pi)$$
+$$= P(-1.7\pi \geq -0.7)$$
+$$= P\left(\pi \leq \frac{7}{17}\right)$$
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{ccc}
+Prior & $P(\psi \geq 0.3)$ & $P(\psi \geq 0)$ \\ \hline
+Most Pessimistic & 0.025 & 0.35 \\
+Pessimistic & 0.05 & 0.50 \\
+Neutral & 0.10 & 0.65 \\
+Optimistic & 0.20 & 0.80 \\
+Most Optimistic & 0.40 & 0.95 \\ \hline
+\end{tabular}
+\end{table}
+
+```{r, label="priors", echo=FALSE, results = FALSE}
+library(LearnBayes)
+beta.select(quantile1 = list(p = 0.025, x = 7/17), 
+            quantile2 = list(p = 0.35, x = 0.5))
+beta.select(quantile1 = list(p = 0.05, x = 7/17), 
+            quantile2 = list(p = 0.5, x = 0.5))
+beta.select(quantile1 = list(p = 0.1, x = 7/17), 
+            quantile2 = list(p = 0.65, x = 0.5))
+beta.select(quantile1 = list(p = 0.2, x = 7/17), 
+            quantile2 = list(p = 0.8, x = 0.5))
+beta.select(quantile1 = list(p = 0.4, x = 7/17), 
+            quantile2 = list(p = 0.95, x = 0.5))
+```
+These five priors represent varying degrees of pessimism and optimism regarding whether the vaccine exceeds the FDA efficacy threshold of 30% and whether it provides any beneficial effect at all.
+
+To determine the parameters of the Beta prior distributions that satisfy the specified probability conditions, numerical solutions were obtained using the beta.select function from the LearnBayes package in R.
+
+According to Theorem 13.2, the posterior distributions also follow a Beta distribution with shape parameters a + x and b + n - x. 
+
+So, we find the posterior distributions and Bayesian p-values for the five priors with data model $f(T|\pi) \sim Binom(170, \pi)$. 
+
+For all five prior, the hypotheses are $H_0: \psi = 0.3$ vs $H_1: \psi > 0.3$, where $\psi$ denotes the vaccine efficacy.
+
+Since $\psi \geq 0.3 \Leftrightarrow \pi \leq \frac{7}{17}$, we get that $P(\psi  \leq 0.3|t) = P\left(\pi \geq \frac{7}{17}|t\right)$.
+
+To calculate the Bayesian probabilities: $P(\pi \geq \frac{7}{17}|t) = 1 - P(\pi \leq \frac{7}{17}|t)$ where $t = 8$.
+
+The p-values are computed as 
+\[
+1 - P\!\left(\pi \leq \frac{7}{17} \mid t = 8\right)
+\]
+using the corresponding posterior Beta distribution.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{cccc}
+Prior & $g(\pi)$ (Prior) & $h(\pi|t=8)$ (Posterior) \\ \hline
+Most Pessimistic & $Beta(41.05, 37.63)$ & $Beta(49.05, 199.63)$ \\
+Pessimistic & $Beta(43.03, 43.03)$ & $Beta(51.03, 205.03)$ \\
+Neutral & $Beta(42.4, 46.0)$ & $Beta(50.4, 208)$ \\
+Optimistic & $Beta(41.23, 49.20)$ & $Beta(49.23, 211.2)$\\
+Most Optimistic & $Beta(48.96, 66.55)$ & $Beta(56.96, 228.55)$ \\ \hline
+\end{tabular}
+\end{table}
+
+```{r label="bay_pvals", echo=FALSE, results='hide'}
+x = 7/17
+n = 170
+t = 8
+most_pess <- pbeta(q = x, shape1 = 41.05 + t, 
+                   shape2 = n - t + 37.63, lower.tail = F)
+pess <- pbeta(q = x, shape1 = 43.03 + t, 
+              shape2 = n - t + 43.03, lower.tail = F)
+neutral <- pbeta(q = x, shape1 = 42.4 + t, 
+                 shape2 = n - t + 46, lower.tail = F)
+opt <- pbeta(q = x, shape1 = 41.23 + t, 
+             shape2 = n - t + 49.2, lower.tail = F)
+most_opt <- pbeta(q = x, shape1 = 48.96 + t, 
+                  shape2 = n - t + 66.55, lower.tail = F)
+```
+
+# Results
+
+## Frequentist Approach
+
+### MLE
+
+Using the equation $\hat{\psi}^{mle} = \frac{n - 2t}{n-t}$, we can calculate the MLE of $\psi$ when $n = 170$ and $t = 8$ like in our observed study. Ultimately, we get $\boxed{\hat{\psi}^{mle} \approx 0.9506}$.
+
+### Confidence Interval
+
+We can solve the 95\% large sample confidence interval and bootstrap percentile interval for $\psi_0$ with $t = 8$ and $n = 170$: 
+
+```{r label="mle_confidence", echo=FALSE, include = FALSE}
+n <- 170
+t <- 8
+psi_mle <- (n - 2*t) / (n - t)
+psi_se <- sqrt(((1-psi_mle)*(2-psi_mle)^2) / n)
+
+lower <- psi_mle - qnorm(0.975)*psi_se
+upper <- psi_mle + qnorm(0.975)*psi_se
+
+lower
+upper
+psi_se 
+```
+
+```{r label="mle_empirical_sd", echo=FALSE, results = FALSE}
+set.seed(414)
+
+pi_samples <- rbinom(n = 100000, size = 170, prob =  8/170)
+pi_mle <- pi_samples / 170
+psi_samples <- (1 - 2*pi_mle) / (1-pi_mle)
+mean(psi_samples)
+sd(psi_samples)
+
+lower_boot <- mean(psi_samples) - qnorm(0.975)* sd(psi_samples)
+lower_boot
+
+upper_boot <- mean(psi_samples) + qnorm(0.975)* sd(psi_samples)
+upper_boot
+```
+
+\begin{table}[H]
+\centering
+\caption{Confidence Intervals for $\psi_0$}
+\begin{tabular}{ccccc} 
+Confidence Interval Type & MLE & SE & Lower & Upper \\ \hline
+Large Sample & 0.9506 & 0.0179 & 0.9156 & 0.9857 \\
+Bootstrap & 0.9503 & 0.0181 & 0.9149 & 0.9857 \\ \hline
+\end{tabular}
+\end{table}
+
+Both the numeric and bootstrapped confidence intervals do not contain values that are less than or equal to 0.3. Therefore, using the Frequentist approach, we have sufficient evidence to reject our null hypothesis.
+
+### Likelihood Ratio Test Statistic and P-values
+
+Given that $\hat{\psi}^{mle} \approx 0.9506$ and $H_0: \psi = 0.3$, we are solving for $2\left[\ell{(0.9506)} - \ell{(0.3)}\right]$. Using that $t = 8$ and $n = 160$, we can calculation $\ell(0.9506)$ and $\ell(0.3)$:
+
+$\ell(0.9506) = \ln{\binom{160}{8}} + 8\ln{(1-0.9506)} -8\ln{(2 - 0.9506)}  + (162)\ln{(\frac{1}{2-0.9506})} \approx -1.945$
+
+$\ell(0.3) = \ln{\binom{160}{8}} + 8\ln{(0.7)} -8\ln{(1.3)}  + (162)\ln{(\frac{1}{1.3})} \approx - 62.746$
+
+Then, $W = 2(-1.945 + 62.746) \approx \boxed{121.601}$
+
+
+```{r label="mle_ratio_stat", echo=FALSE, results = FALSE}
+log_lik_func <- function(psi, n , t){
+  log(choose(n, t)) + t*log(1-psi) - t*log(2-psi) -(n-t)*log((2-psi))
+}
+log_mle <- log_lik_func(psi_mle, 170, 8)
+log_null <- log_lik_func(0.3, 170, 8)
+log_mle
+log_null
+
+W_stat <- 2*(log_mle - log_null)
+W_stat
+```
+
+
+\begin{table}[H]
+\centering
+\caption{P-values for $\psi_0$}
+\begin{tabular}{ccccc} 
+Type & P-value \\ \hline
+Chi Square &  $2.82\cdot 10^{-28}$ \\
+Empirical & 0 \\ \hline
+\end{tabular}
+\end{table}
+
+From table 2, we can conclude that the p-value under the chi square distribution and the empirical p-value are very similar, as both are around 0. With those p-values, we reject our null hypothesis and have sufficient evidence to conclude that $\psi_0$ is greater than 0.3. Since the chi squared test is two sided, it also encapsulates the one-sided numerical test. Since we rejected our two numerical sided test, we would also reject the one numerical sided test. 
+
+```{r label="mle_empirical_p", echo=FALSE, warnings=FALSE, message = FALSE, include = FALSE}
+pchisq(W_stat, 1, lower.tail = F)
+set.seed(414)
+values <- c()
+pi_null <- (1 - 2*0.3) / (1-0.3)
+
+for(i in 1:10000){
+  t_star <- rbinom(1, 170, pi_null)
+  psi_star <- (170 - 2*t_star) / (170-t_star)
+  wstar <- 2*(log_lik_func(psi_star, 170, t_star) - log_lik_func(0.3,170, t_star))
+  values <- c(values, wstar)
+  
+}
+
+emp_p_value <- mean(values >= W_stat)
+emp_p_value
+cat("Empirical P value = ", emp_p_value)
+```
+
+```{r label="mle_empirical_hist", echo=FALSE, warnings=FALSE, message = FALSE, fig.height=3.75, fig.width=3.75, fig.align='center'}
+ggplot(data = NULL,
+mapping = aes(x = values))+
+geom_histogram(bins = 40) +
+geom_vline(xintercept = W_stat, color = "red") +
+labs(title = "Histogram of Bootstrapped Values of W*",
+     x = "Likelihood Ratio Test Statistic Value (W*)", y = "Count")
+```
+
+We represent our empirical p-value with a histogram after bootstrapping 10000 values of W and comparing those values to our observed ratio test statistic ($W \approx 121.601$), resulting p-value $\approx$ 0.
+
+## Bayesian Approach
+
+### Prior and Posterior Distribution
+
+```{r label="bay_plots", echo=FALSE, fig.height = 4.5, fig.width=10}
+
+diff_posts <- list()
+diff_priors <- list(c(0.700102, 1), c(41.05, 37.63), c(43.03, 43.03), 
+                    c(42.4, 46.0), c(41.23, 49.20), c(48.96, 66.55))
+titles <- c("BNT162b2 Study","Most Pessimistic", "Pessimistic", "Neutral", 
+            "Optimistic", "Most Optimistic")
+
+for(i in 1:6){
+  diff_posts[[i]] <- ggplot() + 
+  geom_function(fun = dbeta, 
+                mapping = aes(color = "Prior"),
+                args = list(shape1 = diff_priors[[i]][1], 
+                            shape2 = diff_priors[[i]][2]),
+                xlim = c(0,1)) + 
+  geom_function(fun=dbeta,
+                mapping = aes(color="Posterior"),
+                args = list(shape1 = diff_priors[[i]][1] + t, shape2 = 
+                              n-t + diff_priors[[i]][2]),
+xlim = c(0,1)) +
+  scale_color_manual(values = c("Prior" = "red", "Posterior" = "blue")) + 
+  labs(title = paste("Binomial with Beta \nPrior (", titles[i], ")"), 
+       subtitle="observe t=8",
+       x = expression(pi),
+       y = "PDF")
+}
+
+diff_posts[[1]] + diff_posts[[2]] + diff_posts[[3]] + diff_posts[[4]] + 
+  diff_posts[[5]] + diff_posts[[6]] + 
+  plot_layout(nrow = 2, ncol = 3, guides = "collect") &
+  theme(legend.position = "bottom")
+```
+
+
+We found that regardless of the apriori beliefs that we set, our posterior distribution was approximately symmetric and centered near the same value of $\pi$. However, the distributions from the original paper turned out to be significantly skewed in comparison to ours.
+
+### Confidence Intervals
+Since our posterior distributions are approximately symmetric, we can use the equal tails test to find a confidence interval for $\pi$ for each case of the apriori beliefs.
+
+The equal-tails credible intervals are obtained by computing the 2.5\% and 97.5\% quantiles of the posterior Beta distribution for the infection probability parameter $\pi$, with parameters updated using the observed data. These bounds are then transformed to the vaccine efficacy parameter $\psi$ using the relationship $\psi = \frac{1 - 2\pi}{1 - \pi}$.
+
+The bootstrap intervals are computed by drawing many samples from the posterior Beta distribution of $\pi$, converting each sample to $\psi$, and taking the 2.5\% and 97.5\% quantiles of the resulting simulated values.
+
+```{r label='bays_ci', echo=FALSE, include=FALSE}
+B <- 10000
+convert_to_psi <- function(x){
+  (1 - 2*x) / (1 - x)
+}
+
+convert_to_psi_reverse <- function(x){
+  conversion <- convert_to_psi(x)
+  c(conversion[2], conversion[1])
+}
+ci_mp_equal <- convert_to_psi_reverse(qbeta(c(0.025,0.975), 
+                                            41.05 + t, n - t + 37.63))
+samples_mp <- rbeta(B, 41.05 + t, n - t + 37.63)
+ci_mp_boot <- quantile(convert_to_psi(samples_mp), c(0.025,0.975))
+
+ci_p_equal <- convert_to_psi_reverse(qbeta(c(0.025,0.975), 
+                                           43.03 + t, n - t + 43.03))
+samples_p <- rbeta(B, 43.03 + t, n - t + 43.03)
+ci_p_boot <- quantile(convert_to_psi(samples_p), c(0.025,0.975))
+
+ci_n_equal <- convert_to_psi_reverse(qbeta(c(0.025,0.975), 
+                                           42.2 + t, n - t + 46.0))
+samples_n <- rbeta(B, 42.2 + t, n - t + 46.0)
+ci_n_boot <- quantile(convert_to_psi(samples_n), c(0.025,0.975))
+
+ci_o_equal <- convert_to_psi_reverse(qbeta(c(0.025,0.975), 
+                                           41.23 + t, n - t + 49.20))
+samples_o <- rbeta(B, 41.23 + t, n - t + 49.20)
+ci_o_boot <- quantile(convert_to_psi(samples_o), c(0.025,0.975))
+
+ci_mo_equal <- convert_to_psi_reverse(qbeta(c(0.025,0.975), 
+                                            48.96 + t, n - t + 66.55))
+samples_mo <- rbeta(B, 48.96 + t, n - t + 66.55)
+ci_mo_boot <- quantile(convert_to_psi(samples_mo), c(0.025,0.975))
+```
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+Prior & Lower & Upper \\ \hline
+Most Pessimistic (Equal Tail) & `r round(ci_mp_equal[1],4)` & `r round(ci_mp_equal[2],4)` \\
+Most Pessimistic (Bootstrap) & `r round(ci_mp_boot[1],4)` & `r round(ci_mp_boot[2],4)` \\
+
+Pessimistic (Equal Tail) & `r round(ci_p_equal[1],4)` & `r round(ci_p_equal[2],4)` \\
+Pessimistic (Bootstrap) & `r round(ci_p_boot[1],4)` & `r round(ci_p_boot[2],4)` \\
+
+Neutral (Equal Tail) & `r round(ci_n_equal[1],4)` & `r round(ci_n_equal[2],4)` \\
+Neutral (Bootstrap) & `r round(ci_n_boot[1],4)` & `r round(ci_n_boot[2],4)` \\
+
+Optimistic (Equal Tail) & `r round(ci_o_equal[1],4)` & `r round(ci_o_equal[2],4)` \\
+Optimistic (Bootstrap) & `r round(ci_o_boot[1],4)` & `r round(ci_o_boot[2],4)` \\
+
+Most Optimistic (Equal Tail) & `r round(ci_mo_equal[1],4)` & `r round(ci_mo_equal[2],4)` \\
+Most Optimistic (Bootstrap) & `r round(ci_mo_boot[1],4)` & `r round(ci_mo_boot[2],4)` \\ \hline
+\end{tabular}
+\end{table}
+
+While each of the confidence intervals are significantly different than the confidence interval in the study, they still do not contain values less than or equal to 0.3 regardless of the apriori beliefs that were used. Therefore, we have sufficient evidence to reject the null hypothesis.
+
+
+### P-Values
+
+\begin{table}[H]
+\centering
+\caption{Bayesian P-values}
+\begin{tabular}{ccccc} 
+Priors & P-value \\ \hline
+Most Pessimistic &  $2.42\cdot 10^{-13}$ \\
+Pessimistic &  $1.93\cdot 10^{-13}$ \\
+Neutral &  $4.67\cdot 10^{-14}$ \\
+Optimistic &  $6.64\cdot 10^{-15}$ \\
+Most Optimistic &  $9.61\cdot 10^{-15}$ \\ \hline
+\end{tabular}
+\end{table}
+
+The Bayesian P-values are essentially 0, indicating extremely strong posterior evidence to reject our null hypothesis. The conclusion is therefore robust to the choice of prior, whether it is overly pessimistic or optimistic.
+
+# Discussion / Conclusion
+
+The MLE estimate of efficacy resulted in about a 95% reduction in infection risk for the vaccinated group compared to the placebo group. Accordingly, the 95% large-sample confidence interval for the efficacy rate using the MLE emerged to be [91.56%, 98.57%], which lies in approximately the same region as the Bayesian credible interval reported in the original paper, [90.3%, 97.6%] (Polack, Fernando P., et al.). Both the likelihood ratio test and the Bayesian hypothesis tests also produced extremely small p-values, providing overwhelming evidence that vaccine efficacy exceeds the FDA threshold of 30%. Furthermore, the Bayesian results remained consistent across a range of optimistic and pessimistic apriori beliefs, supporting that the conclusion is robust to the choice of prior. 
+
+From our results, the estimated efficacy appears to be heavily driven by the observed data. This robustness is considered a strength, especially in vaccine studies, where findings must remain reliable even under differing priors. However, a limitation to the analysis is the apriori beliefs being based on subjective assumptions, and therefore, potentially adding bias to our model. To resolve this limitation in an expansion of the study, priors could be constructed based on vaccine efficacy related to similar viral infections.
+
+# References
+
+David J. Sencer CDC Museum. “CDC Museum COVID-19 Timeline.” Centers for Disease Control and Prevention, CDC, 8 July 2024, www.cdc.gov/museum/timeline/covid19.html. Accessed 14 Mar. 2026.
+
+Kashte, Shivaji, et al. “COVID-19 Vaccines: Rapid Development, Implications, Challenges and Future Prospects.” Human Cell, vol. 34, no. 3, 7 Mar. 2021, pmc.ncbi.nlm.nih.gov/articles/PMC7937046/#:
+~:text=Abstract,the%20governments%20across%20the%20world., 
+https://doi.org/10.1007/s13577-021-00512-4. Accessed 14 Mar. 2026.
+
+Polack, Fernando P., et al. “Safety and Efficacy of the BNT162b2 MRNA Covid-19 Vaccine.” The New England Journal of Medicine, vol. 383, no. 27, 10 Dec. 2020, www.nejm.org/doi/full/10.1056/NEJMoa2034577, https://doi.org/10.1056/NEJMoa2034577. Accessed 14 Mar. 2026.
+
+# Appendix
+
+## Code
+
+\textbf{Data Frames}
+```{r ref.label='data', eval=FALSE}
+```
+
+\textbf{Visualizations}
+```{r ref.label = "table", eval=FALSE}
+```
+
+```{r ref.label = "barplot", eval=FALSE}
+```
+
+
+## MLE
+\textbf{Confidence Interval}
+```{r ref.label="mle_confidence", eval=FALSE}
+```
+
+\textbf{Second Order Approximation}
+```{r ref.label="mle_graph", eval=FALSE}
+```
+
+\textbf{Empirical Standard Deviation}
+```{r, ref.label="mle_empirical_sd", eval=FALSE}
+```
+
+\textbf{Ratio Statistic}
+```{r ref.label="mle_ratio_stat", eval=FALSE}
+```
+
+\textbf{Empirical P-Value}
+```{r ref.label="mle_empirical_p", eval=FALSE}
+```
+
+\textbf{Empirical Histogram}
+```{r ref.label="mle_empirical_hist", eval = FALSE}
+
+```
+
+## Bayesian
+
+\textbf{Priors}
+```{r, ref.label="priors", eval=FALSE}
+```
+
+\textbf{Prior Vs. Posterior Plots}
+```{r ref.label="bay_plots", eval=FALSE}
+```
+
+\textbf{Confidence Interval}
+```{r ref.label='bays_ci', eval=FALSE}
+```
+
+\textbf{P-values}
+```{r ref.label="bay_pvals", eval=FALSE}
+```
+
+
+
+## Proofs
+Suppose X denotes the number of COVID-19 cases among the $n_1$ patients randomly assigned to the BNT162b2 vaccine group and Y is the number of COVID-19 cases among the $n_2$ patients assigned to the placebo.
+
+```{r ref.label = "table", echo=FALSE}
+```
+
+Let us restrict our attention to just the 170 cases that had COVID-19. We want to know the PMF of the random variable T which is defined as the count in the BNT162b2 vaccine cell given this restriction. That is, T is the value of X but with the restriction that X + Y = 170.
+
+The binomial distribution for T can be justified by the following argument. Since the sample sizes - $n_1$ and $n_2$ - in each group are LARGE and the event rates are small, we may assume 
+
+$X \approx Pois(n_1\pi_v) \qquad \text{independently} \qquad Y \approx Pois(n_2\pi_p)$
+
+This is because the Poisson distribution approximates a binomial very well in this setting.
+
+Therefore the PMF of T can be found as follows:
+
+$P(T = t) = P(X = t \mid X + Y = n) \quad t = 0, 1, ..., n$
+
+$= \frac{P(X = t \;\cap\, X + Y = n)}{P(X + Y = n)}$
+
+$= \frac{P(X = t \;\cap\, Y = n - t)}{P(X + Y = n)}$
+
+$= \frac{P(X = t) \;\cdot\; P(Y = n - t)}{P(X + Y = n)} \quad X, Y \text{ ind}$
+
+$= \frac{\frac{(n_1\pi_v)^{n_1} \cdot e^{-(n_1\pi_v)}}{n_1!} \cdot \frac{(n_2\pi_p)^{n_2} \cdot e^{-(n_2\pi_p)}}{n_2!}}{\frac{(n_1\pi_v + n_2\pi_p)^n \cdot e^{-(n_1\pi_v + n_2\pi_p)}}{n!}}$
+
+$= \frac{n!(n_1\pi_v)^{n_1}(n_2\pi_p)^{n_2}}{n_1!n_2!(n_1\pi_v + n_2\pi_p)^n}$
+
+
+$= \frac{n!}{n_1!n_2!}\cdot\frac{(n_1\pi_v)^{n_1}}{(n_1\pi_v + n_2\pi_p)^{n_1}}\cdot\frac{(n_2\pi_p)^{n_2}}{(n_1\pi_v + n_2\pi_p)^{n_2}}$
+
+$= \frac{n!}{n_1!(n - n_1)!}\cdot\frac{(n_1\pi_v)^{n_1}}{(n_1\pi_v + (n - n_1)\pi_p)^{n_1}}\frac{((n - n_1)\pi_p)^{n - n_1}}{(n_1\pi_v + (n - n_1)\pi_p)^{(n - n_1)}}$
+
+$= \binom{n}{n_1}\cdot(\frac{n_1\pi_v}{n_1\pi_v + n\pi_p - n_1\pi_p})^{n_1} \cdot (\frac{n\pi_p - n_1\pi_p}{n_1\pi_v + n\pi_p - n_1\pi_p})^{n - n_1}$
+
+$= \binom{n}{n_1}\cdot(\frac{n_1\pi_v}{n_1\pi_v + n\pi_p - n_1\pi_p})^{n_1} \cdot (\frac{ n_1\pi_v + n\pi_p - n_1\pi_p-n_1\pi_v}{n_1\pi_v + n\pi_p - n_1\pi_p})^{n - n_1}$
+
+$= \binom{n}{n_1}\cdot(\frac{n_1\pi_v}{n_1\pi_v + n\pi_p - n_1\pi_p})^{n_1} \cdot (1 - \frac{n_1\pi_v}{n_1\pi_v + n\pi_p - n_1\pi_p})^{n - n_1}$
+
+
+Therefore, we can see that $T \sim Binom(n, \frac{n_1\pi_v}{n_1\pi_v + n\pi_p - n_1\pi_p}) =  Binom(n, \frac{n_1\pi_v}{n_1\pi_v + n_2\pi_p})$
+
+when X and Y are independent and approximately follow a Poisson distribution (large group size and small event rate)
+
+
+
