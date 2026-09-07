@@ -6,7 +6,7 @@ Welcome to my project portfolio. I am a Statistics student in the Data Science t
 
 ### Pokémon Interactive Text-Based Game
 
-Developed an interactive text-based Java game in which players navigate a map, encounter Pokémon, and participate in battles. The project demonstrates object-oriented programming, class interaction, conditional logic, and user input handling.
+Created an interactive text-based Java game in which players navigate a map, encounter Pokémon, and participate in battles. The project demonstrates object-oriented programming, class interaction, conditional logic, and user input handling.
 
 **Skills:** Java, object-oriented programming, game logic, user interaction
 
@@ -22,4 +22,6 @@ Built a logistic regression model in R to analyze borrower characteristics assoc
 
 ### Fitted - AI Wardrobe Assistant
 
+Developed an AI-powered wardrobe assistant that helps users organize clothing and generate personalized outfit recommendations based on style preferences, occasion, location, and weather. The web application supports clothing image uploads with automatic categorization, AI-generated recommendations, and a swipe-based interface for selecting an outfit of the day with 24-hour caching.
 
+**Skills:** TypeScript, React, AI integration, API development, image processing, weather integration, full-stack development 
