@@ -1,6 +1,6 @@
 ---
 title: "BNT162b2 Vaccine Efficacy: Frequentist vs Bayesian Approaches"
-author: 'Kian Sharifzadeh, Krish Doshi, Lauren Yee'
+author: 'Lauren Yee, Kian Sharifzadeh, Krish Doshi'
 date: '`r Sys.Date()`'
 output: pdf_document
 urlcolor: blue
