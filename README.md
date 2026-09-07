@@ -22,6 +22,10 @@ Developed an AI-powered wardrobe assistant that helps users organize clothing an
 
 **Skills:** TypeScript, React, AI integration, API development, image processing, weather integration, full-stack development 
 
+[View the Fitted Project](./Fitted-AI-Wardrobe-Assistant)
+
+[View the Fitted web application](https://aiscuw-pc25-fitted-eight.vercel.app/)
+
 ### Loan Default Risk Modeling
 
 Built a logistic regression model in R to analyze borrower characteristics associated with loan default. The project includes exploratory analysis, stepwise selection using AIC and statistical significance, model interpretation, and discussion of limitations.
@@ -41,7 +45,3 @@ Created an interactive text-based Java game in which players navigate a map, enc
 **Skills:** Java, object-oriented programming, game logic, user interaction
 
 [View the Pokémon Game Project](./Pokemon-Text-Game)
-[View the Fitted Project](./Fitted-AI-Wardrobe-Assistant)
-
-[View the Fitted web application](https://aiscuw-pc25-fitted-eight.vercel.app/)
-
