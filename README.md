@@ -4,6 +4,16 @@ Welcome to my project portfolio. I am a Statistics student in the Data Science t
 
 ## Projects
 
+### Billboard Hot 100 Song Rating Modeling
+
+Analyzed how artist demographics and musical characteristics were associated with Billboard song ratings across decades. The project used multiple linear regression, interaction effects, model comparison, and backward stepwise selection to compare which factors were associated with song ratings from the 1960s through the 2010s.
+
+**Project Context:** Three-person statistical modeling project completed for STAT 423.
+
+**Skills:** R, exploratory data analysis (EDA), multiple linear regression, model selection, model interpretation, data visualization
+
+[View the Billboard Hot 100 Project](./Billboard-Hot-100-Modeling)
+
 ### Pfizer-BioNTech Vaccine Efficacy Analysis
 
 Analyzed Pfizer-BioNTech BNT162b2 vaccine efficacy using both frequentist and Bayesian statistical inference. The project included maximum likelihood estimation, confidence intervals, likelihood ratio testing, Bayesian posterior analysis, and sensitivity analysis comparing results across priors ranging from most pessimistic to most optimistic.
