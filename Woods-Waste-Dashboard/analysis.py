@@ -3,6 +3,10 @@ from pathlib import Path
 import pandas as pd
 
 
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
+
+
 def load_one_waste_file(file_path: str, month: str) -> pd.DataFrame:
     """
     Loads one Woods waste CSV and converts it from the original wide
@@ -87,8 +91,8 @@ def load_one_waste_file(file_path: str, month: str) -> pd.DataFrame:
 
 
 def load_all_waste_data(
-    march_path: str = "data/march_waste.csv",
-    april_path: str = "data/april_waste.csv"
+    march_path=DATA_DIR / "march_waste.csv",
+    april_path=DATA_DIR / "april_waste.csv"
 ) -> pd.DataFrame:
     """
     Loads March and April Woods waste data into one long-format DataFrame.
