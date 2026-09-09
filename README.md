@@ -1,6 +1,6 @@
 # Data Analytics and Programming Portfolio
 
-Welcome to my project portfolio. I am a Statistics student in the Data Science track at the University of Washington, with experience in R, Java, Python, including statistical modeling, data visualization, and object-oriented programming.
+Welcome to my project portfolio. I am a Statistics student in the Data Science track at the University of Washington with experience in R, Python, and Java, including statistical modeling, data visualization, and object-oriented programming. I am passionate about using data to uncover meaningful insights and building practical applications that combine analytics, AI tools, and interactive technologies to solve real-world problems!
 
 ## Projects
 
@@ -8,7 +8,7 @@ Welcome to my project portfolio. I am a Statistics student in the Data Science t
 
 Developed an interactive Streamlit dashboard to help analyze food waste, product performance, and customer feedback across the locations of the PNW-based coffee chain, Woods Coffee. The dashboard identifies high-risk products using waste rate, waste volume, and sales volume, provides production recommendations, compares performance across stores and months, and incorporates structured customer reviews to support operational decision-making.
 
-**Project Context:** **Project Context:** Developed for Everybody Hacks 2026, a hackathon hosted by GEODAT, Data Science Society, iQueeries, and Notion at UW. Led a four-person team by coordinating the project from concept through implementation and developing the dashboard.
+**Project Context:** Developed for Everybody Hacks 2026, a hackathon hosted by GEODAT, Data Science Society, iQueeries, and Notion at UW. Led a four-person team by coordinating the project from concept through implementation and developing the dashboard.
 
 **Skills:** Python, Streamlit, Pandas, Altair, data cleaning, dashboard development, business analytics, data visualization, risk scoring
 
