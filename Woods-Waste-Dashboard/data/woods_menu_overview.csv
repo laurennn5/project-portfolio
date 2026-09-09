@@ -1,0 +1,32 @@
+item_name,category,dietary_flags,vegan,gluten-free,fall,winter,spring,Summer,USD
+Breakfast Croissant Sandwich,Breakfast,,0,0,0,0,0,0,7.95
+Sausage & Cheddar Breakfast Biscuit,Breakfast,gluten-free,0,1,0,0,0,0,7.05
+Spinach Artichoke Twist,Breakfast,,0,0,0,0,0,0,5.90
+Egg Bites,Breakfast,gluten-free,0,1,0,0,0,0,6.60
+Breakfast Burrito,Breakfast,,0,0,0,0,0,0,6.95
+Santa Fe Veggie Burrito,Breakfast,,0,0,0,0,0,0,7.05
+Baja Croissant Sandwich,Breakfast,,0,0,0,0,0,0,10.25
+Ham & Swiss Croissant,Breakfast,,0,0,0,0,0,0,6.95
+Traditional Croissant,Bakery,,0,0,0,0,0,0,4.95
+Grilled Cheese Sandwich,Lunch,,0,0,0,0,0,0,7.50
+Everything Bagel Bites,Bakery,,0,0,0,0,0,0,4.50
+Plain Bagel Bites,Bakery,,0,0,0,0,0,0,4.50
+Almond Bear Claw,Bakery,,0,0,0,0,0,0,5.50
+Granola Parfait,Breakfast,,0,0,0,0,0,0,5.45
+Banana Bread,Bakery,vegan,1,0,0,0,0,0,4.55
+Lemon Blueberry Scone,Bakery,"gluten-free, seasonal: spring/summer",0,1,0,0,1,1,5.45
+White Chocolate Raspberry Scone,Bakery,,0,0,0,0,0,0,5.15
+Pumpkin Scone,Bakery,"gluten-free, seasonal: fall/winter",0,1,1,1,0,0,5.45
+Berry Cream Cheese Loaf,Bakery,seasonal: spring/summer,0,0,0,0,1,1,4.95
+Lemon Loaf,Bakery,seasonal: spring,0,0,0,0,1,0,4.95
+Pumpkin Cream Cheese Loaf,Bakery,seasonal: fall/winter,0,0,1,1,0,0,4.95
+Chocolate Cream Cheese Loaf,Bakery,seasonal: winter,0,0,0,1,0,0,4.95
+Chocolate Chip Cookie,Bakery,seasonal: spring,0,0,0,0,1,0,4.60
+Monster Cookie,Bakery,gluten-free,0,1,0,0,0,0,4.80
+Apple Coffee Cake Loaf,Bakery,seasonal: fall,0,0,1,0,0,0,4.95
+Peppermint Bark Cookie,Bakery,seasonal: fall/winter,0,0,1,1,0,0,4.60
+Oatmeal,Breakfast,"gluten-free, vegan",1,1,0,0,0,0,4.05
+Jalapeno Cheddar Twist,Bakery,,0,0,0,0,0,0,5.90
+Classic Coffee Cake Loaf,Bakery,seasonal: winter,0,0,0,1,0,0,4.95
+Pizza Twist,Lunch,,0,0,0,0,0,0,5.90
+Acai Bowl,Breakfast,,0,0,0,0,0,0,9.45

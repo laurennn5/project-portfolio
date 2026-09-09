@@ -1,0 +1,40 @@
+HOOK:
+-“Coming from different cultures, we each learned early on that food represents effort, respect, and care. Seeing this as a common issue, we were naturally drawn to find a way to address it. That’s why we wanted to create a solution that helps Woods Coffee reduce waste while still creating the best possible experience for customers.”
+
+PROBLEM:
+- Analyzing the combined March and April datasets reveals a clear opportunity to optimize inventory efficiency, eliminate food waste, and protect operating margins:Rising food waste trend: 
+    - The data shows that unsold food volume escalated significantly from 7.36% in March to 10.45% in April
+    - 19,019 units of food waste: Across just this 61-day period, a total of 19,019 fresh food items were left unsold at closing time, representing an urgent environmental and operational challenge.Perishable item mismatch: Highly sensitive "1-Day Expiration" categories—such as fresh pastries and breakfast sandwiches—consistently drive the highest volume of food waste, with certain daily items spiking between 41% and 45% waste.Compounding money waste: Because unsold items are logged at a recovery value of zero, this food waste represents a substantial compound financial loss in both wasted ingredient costs and lost retail revenue.
+
+
+
+Solution: We decided to develop an application that benefits both the customers and the business. 
+The goal of the app is not only to improve customer satisfaction, but also to help the business reduce 
+food waste, improve efficiency, and increase profits. After analyzing the business data, we noticed that 
+a significant amount of food was being wasted every day. This waste resulted in unnecessary financial losses 
+because ingredients and prepared meals that were not sold had to be thrown away.
+
+To address this issue, our app introduces a customer review and rewards system. 
+Customers are able to leave reviews and ratings for the food items they purchase directly through the app. 
+These reviews allow customers to share feedback about food quality, portion sizes, freshness, 
+taste, and overall satisfaction. In exchange for participating, customers earn reward points through the business’s existing loyalty system, where 12 points equals one free drink. This encourages more customers to actively engage with the app and provide useful feedback.
+The reviews and purchasing information are then collected and processed into a dataset that 
+can be analyzed by the business. The app tracks which menu items are selling well, which items 
+receive poor reviews, and which products are frequently left unsold. By combining customer feedback 
+with sales data, the business can better understand customer preferences and identify patterns in demand.
+
+Employees and managers also have access to a separate section of the app designed for business operations. 
+Through this system, staff members can monitor inventory levels, sales trends, and customer feedback in real time. 
+For example, if a certain food item consistently sells out quickly and receives positive reviews, 
+the business can increase production of that item. On the other hand, if an item is regularly left unsold or receives poor ratings, 
+the business can reduce the amount being prepared or consider removing it from the menu entirely.
+
+In addition, the app can help employees predict busy hours and customer demand based on previous sales data. 
+This allows the business to prepare the right amount of food at the right times, reducing unnecessary 
+waste while ensuring customers still have enough options available. Over time, the collected data can help 
+the business make smarter decisions regarding inventory management, menu planning, and pricing strategies.
+
+Overall, the app creates a system where both customers and the business benefit. 
+Customers are rewarded for sharing their opinions and helping improve the service, 
+while the business gains valuable insights that reduce food waste, lower costs, 
+and improve customer satisfaction. This creates a more efficient, sustainable, and profitable business model.

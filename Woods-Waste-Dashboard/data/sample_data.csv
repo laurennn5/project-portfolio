@@ -1,0 +1,7 @@
+transaction_id,date,item_name,category,quantity_sold,quantity_prepared,quantity_wasted,rating,complaint_category,price
+1001,2026-05-01,Iced Matcha Latte,Drink,45,60,15,2,Too sweet,5.75
+1002,2026-05-01,Vanilla Latte,Drink,70,75,5,5,None,5.25
+1003,2026-05-01,Breakfast Burrito,Food,20,35,15,3,Price,6.50
+1004,2026-05-02,Iced Matcha Latte,Drink,50,65,15,3,Too sweet,5.75
+1005,2026-05-02,Turkey Croissant,Food,15,30,15,2,Portion size,7.25
+1006,2026-05-02,Cold Brew,Drink,80,85,5,5,None,4.75
