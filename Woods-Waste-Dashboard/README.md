@@ -1,44 +1,243 @@
 # Woods Coffee Waste & Satisfaction Dashboard
 
-Hackathon prototype for reducing café food and drink waste by combining **customer reviews**, **sales trends**, and **inventory/waste data**.
+Interactive Streamlit dashboard developed for Everybody Hacks 2026 to help Woods Coffee analyze product waste, sales performance, and structured customer feedback.
 
-The app has two views:
+The application provides two views:
 
-- **Customer View:** customers leave verified reviews and earn feedback points.
-- **Manager View:** Woods managers see product waste, ratings, risk scores, and recommended actions.
+- **Customer View:** Customers can submit receipt-supported food reviews, provide structured feedback, view review history, and earn feedback points.
+- **Manager View:** Woods managers can analyze waste and sales performance across stores and months, identify high-risk products, review recommended actions, and explore customer satisfaction data.
 
 ---
 
 ## Features
 
-- Customer review form
-- Reward points prototype
-- Manager-only dashboard
-- Product waste/rating analysis
-- Risk score and recommendation system
-- Woods Coffee styled UI
+- Store- and month-level waste analysis
+- Product waste-rate and waste-volume tracking
+- Custom product risk scoring
+- Data-driven manager recommendations
+- March vs. April performance comparison
+- Structured customer review system
+- Receipt-supported review submissions
+- Customer reward points prototype
+- Customer review history
+- Product satisfaction analysis
+- Interactive Altair visualizations
+- Separate customer and manager interfaces
+- Woods Coffee-inspired Streamlit UI
 
 ---
 
 ## Project Structure
 
 ```text
-woods-waste-hackathon/
+Woods-Waste-Dashboard/
 ├── app.py
 ├── analysis.py
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
 └── data/
-    └── sample_data.csv
+    ├── march_waste.csv
+    ├── april_waste.csv
+    ├── woods_menu_overview.csv
+    └── customer_reviews.csv
 ```
 
 | File | Purpose |
 |---|---|
-| `app.py` | Main Streamlit website and UI |
-| `analysis.py` | Waste, rating, risk score, and recommendation logic |
-| `requirements.txt` | Python packages needed to run the app |
-| `data/sample_data.csv` | Sample data used before the real Woods dataset |
+| `app.py` | Main Streamlit application, interface, customer review workflow, and manager dashboard |
+| `analysis.py` | Waste calculations, risk scoring, risk categorization, and manager recommendation logic |
+| `requirements.txt` | Python packages required to run the application |
+| `data/march_waste.csv` | March product waste and sales data |
+| `data/april_waste.csv` | April product waste and sales data |
+| `data/woods_menu_overview.csv` | Menu information used for customer review functionality |
+| `data/customer_reviews.csv` | Stores submitted customer review data when reviews are created |
+
+---
+
+## Technologies
+
+- Python
+- Streamlit
+- Pandas
+- Altair
+- Data cleaning and transformation
+- Interactive dashboard development
+- Business analytics
+- Data visualization
+
+---
+
+## Waste Analysis
+
+The dashboard processes store-level sales and waste data and converts the original wide-format spreadsheets into a clean long-format dataset.
+
+For each product, the application calculates:
+
+- Quantity sold
+- Quantity wasted
+- Waste rate
+- Waste-volume score
+- Low-sales score
+- Combined risk score
+- Risk category
+- Recommended manager action
+
+Waste rate is calculated as:
+
+```text
+Quantity Wasted / (Quantity Wasted + Quantity Sold)
+```
+
+Products are classified as:
+
+- **Low Risk**
+- **Medium Risk**
+- **High Risk**
+
+---
+
+## Risk Scoring
+
+The product risk score combines three operational measures:
+
+```text
+55% Waste Rate
++ 35% Waste Volume Score
++ 10% Low Sales Score
+```
+
+This approach helps distinguish between products that have a high percentage of waste and products that create a large amount of total waste.
+
+Based on the resulting risk category and product performance, the dashboard can recommend actions such as:
+
+- Maintain current production
+- Watch closely
+- Fine-tune par levels
+- Adjust forecasting or batch timing
+- Reduce production or review item demand
+
+---
+
+## Manager Dashboard
+
+The manager dashboard allows users to filter performance by:
+
+- Store location
+- Month
+- Minimum units sold
+
+The dashboard displays key metrics including:
+
+- Total units sold
+- Total units wasted
+- Overall waste rate
+- Number of high-risk products
+- Highest-risk product and recommended action
+
+Additional visualizations and analysis include:
+
+- Product risk table
+- Top 10 products by waste volume
+- Top 10 products by waste rate
+- Waste rate vs. quantity sold
+- March vs. April waste-rate comparison
+- Customer feedback summaries
+- Good, neutral, and bad review analysis by product
+
+---
+
+## Customer Feedback System
+
+The customer side of the application allows customers to submit structured feedback about food items from their order.
+
+Customers provide:
+
+- Phone number
+- Transaction number
+- Food item
+- 1–5 rating
+- Feedback category
+- Feedback detail
+- Optional written comments
+- Receipt or photo upload
+
+Feedback categories include:
+
+- Taste
+- Freshness
+- Price/value
+- Portion size
+- Temperature
+
+The application prevents the same transaction number from being submitted more than once.
+
+---
+
+## Customer Rewards Prototype
+
+Customers earn:
+
+```text
+1 point per unique reviewed transaction
+```
+
+The prototype reward threshold is:
+
+```text
+12 points = 1 free food item
+```
+
+Customers can also view their current points and review history within the application.
+
+---
+
+## Customer Satisfaction Analysis
+
+Managers can review customer feedback separately from the waste-risk calculation.
+
+The dashboard summarizes:
+
+- Average product rating
+- Number of reviews
+- Most common feedback category
+- Most common feedback detail
+- Written customer comments
+- Highest-rated product
+- Lowest-rated product
+
+Managers can also select an individual food item to compare:
+
+- Good reviews
+- Neutral reviews
+- Bad reviews
+
+across feedback categories such as taste, freshness, price/value, portion size, and temperature.
+
+---
+
+## Decision-Support Logic
+
+The dashboard combines:
+
+```text
+sales data + waste data + customer feedback
+```
+
+to provide managers with a broader view of product performance.
+
+Waste and sales data are used to identify operational inefficiencies and generate product risk scores.
+
+Customer feedback is analyzed separately to provide additional context around why customers may prefer or dislike specific products.
+
+Together, these insights can help managers make more informed decisions about:
+
+- Production quantities
+- Forecasting
+- Batch timing
+- Par levels
+- Product demand
+- Customer satisfaction
 
 ---
 
@@ -47,54 +246,17 @@ woods-waste-hackathon/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
-cd YOUR-REPO-NAME
+git clone https://github.com/laurennn5/project-portfolio.git
+cd project-portfolio/Woods-Waste-Dashboard
 ```
 
-Example:
-
-```bash
-git clone https://github.com/YOUR-USERNAME/woods-waste-dashboard.git
-cd woods-waste-dashboard
-```
-
----
-
-### 2. Make sure you are in the right folder
-
-On Windows:
-
-```bash
-dir
-```
-
-On Mac/Linux:
-
-```bash
-ls
-```
-
-You should see:
-
-```text
-app.py
-analysis.py
-requirements.txt
-README.md
-data
-```
-
----
-
-### 3. Install packages
-
-Try:
+### 2. Install required packages
 
 ```bash
 pip install -r requirements.txt
 ```
 
-If that does not work, try:
+If `pip` is not recognized on Windows, use:
 
 ```bash
 py -m pip install -r requirements.txt
@@ -106,17 +268,13 @@ or:
 python -m pip install -r requirements.txt
 ```
 
----
-
-### 4. Run the app
-
-Try:
+### 3. Run the application
 
 ```bash
 streamlit run app.py
 ```
 
-If that does not work, try:
+If `streamlit` is not recognized on Windows, use:
 
 ```bash
 py -m streamlit run app.py
@@ -128,7 +286,7 @@ or:
 python -m streamlit run app.py
 ```
 
-Then open the local URL shown in the terminal, usually:
+The application will usually open at:
 
 ```text
 http://localhost:8501
@@ -141,156 +299,41 @@ http://localhost:8501
 ### Customer View
 
 1. Select **Customer** in the sidebar.
-2. Enter any phone number.
-3. Use the menu to:
+2. Enter a valid phone number.
+3. Choose from:
    - Leave a Review
    - Check Points
-   - View Review History
+   - Review History
 
 ### Woods Manager View
 
 1. Select **Woods Manager** in the sidebar.
-2. Enter the demo access code:
+2. Enter the prototype access code:
 
 ```text
 woods123
 ```
 
-3. View the manager dashboard.
-
-The dashboard shows:
-
-- Total reviews
-- Average rating
-- Total waste
-- Product risk table
-- Waste rate chart
-- Average rating chart
-- Key product insight
+3. Explore the waste, sales, risk, and customer satisfaction dashboard.
 
 ---
 
-## Stopping the App
+## Prototype Limitations
 
-In the terminal, press:
+This application was developed as a hackathon prototype rather than a production system.
 
-```text
-Ctrl + C
-```
+The manager access code is used only to demonstrate separate customer and manager views. A production deployment would use secure employee authentication and role-based access controls.
 
-If asked:
+Receipt/photo uploads are required as part of the prototype review workflow, but the application does not currently perform automated receipt verification.
 
-```text
-Terminate batch job (Y/N)?
-```
+Customer review data is stored locally in a CSV file rather than in a production database.
 
-Type:
-
-```text
-Y
-```
-
-Then press Enter.
+The risk score is a custom decision-support metric developed for the prototype and should not be interpreted as a statistically validated predictive model.
 
 ---
 
-## Team Workflow
+## Project Context
 
-Before making changes:
+Developed for **Everybody Hacks 2026**, a hackathon hosted by **GEODAT, Data Science Society, iQueeries, and Notion at UW**.
 
-```bash
-git pull
-```
-
-After making changes:
-
-```bash
-git status
-git add .
-git commit -m "Describe what changed"
-git push
-```
-
-Example:
-
-```bash
-git add .
-git commit -m "Improve manager dashboard"
-git push
-```
-
----
-
-## Common Issues
-
-### `pip` is not recognized
-
-Use:
-
-```bash
-py -m pip install -r requirements.txt
-```
-
-or:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-### `streamlit` is not recognized
-
-Use:
-
-```bash
-py -m streamlit run app.py
-```
-
-or:
-
-```bash
-python -m streamlit run app.py
-```
-
-### `FileNotFoundError: data/sample_data.csv`
-
-Make sure `sample_data.csv` is inside the `data` folder:
-
-```text
-woods-waste-hackathon/
-├── app.py
-├── analysis.py
-└── data/
-    └── sample_data.csv
-```
-
-### Manager dashboard is not showing
-
-Select **Woods Manager** and enter:
-
-```text
-woods123
-```
-
----
-
-## Hackathon Notes
-
-The current manager login is only for the prototype. In a real deployment, Woods would use employee accounts and role-based access.
-
-The current dataset is sample data. Once the real Woods Coffee dataset is available, replace or update `data/sample_data.csv`.
-
-The main goal is to combine:
-
-```text
-sales data + inventory/waste data + customer review data
-```
-
-to recommend whether Woods should:
-
-- Restock normally
-- Watch an item closely
-- Tweak a recipe
-- Adjust portioning
-- Reduce production
-- Promote an item
-- Consider removing an item
+Led a four-person team by coordinating project direction, dividing responsibilities, and contributing to the dashboard's data analysis, decision-support logic, and implementation.
