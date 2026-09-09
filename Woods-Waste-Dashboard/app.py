@@ -5,6 +5,8 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
 
 def is_valid_phone(phone: str) -> bool:
     """
@@ -112,8 +114,8 @@ def load_all_waste_data() -> pd.DataFrame:
     Loads March and April Woods waste data into one long DataFrame.
     """
     files = {
-        "March": Path("data/march_waste.csv"),
-        "April": Path("data/april_waste.csv")
+        "March": DATA_DIR / "march_waste.csv",
+        "April": DATA_DIR / "april_waste.csv"
     }
 
     dfs = []
@@ -217,7 +219,7 @@ def load_food_menu() -> pd.DataFrame:
     """
     Loads the Woods menu overview file used for customer reviews.
     """
-    menu_path = Path("data/woods_menu_overview.csv")
+    menu_path = DATA_DIR / "woods_menu_overview.csv"
 
     if not menu_path.exists():
         st.error(
@@ -273,7 +275,7 @@ def save_customer_reviews(
     Each selected food item gets its own rating and structured feedback.
     The description applies to the whole receipt/order.
     """
-    reviews_path = Path("data/customer_reviews.csv")
+    reviews_path = DATA_DIR / "customer_reviews.csv"
     clean_number = clean_phone(phone)
 
     new_reviews = pd.DataFrame([
@@ -302,7 +304,7 @@ def load_customer_reviews() -> pd.DataFrame:
     """
     Loads customer review data if it exists.
     """
-    reviews_path = Path("data/customer_reviews.csv")
+    reviews_path = DATA_DIR / "customer_reviews.csv"
 
     if not reviews_path.exists():
         return pd.DataFrame(columns=[
@@ -1194,7 +1196,7 @@ elif page == "Woods Dashboard":
         "It helps explain why customers may like or dislike specific food items."
     )
 
-    reviews_path = Path("data/customer_reviews.csv")
+    reviews_path = DATA_DIR / "customer_reviews.csv"
 
     if st.button("Reset Demo Reviews"):
         if reviews_path.exists():
