@@ -22,7 +22,7 @@ Analyzed how artist demographics and musical characteristics were associated wit
 
 **Project Context:** Three-person statistical modeling project completed for STAT 423.
 
-**Skills:** R, exploratory data analysis (EDA), multiple linear regression, model selection, model interpretation, data visualization
+**Skills:** R, R Markdown, exploratory data analysis (EDA), multiple linear regression, model selection, model interpretation, data visualization
 
 [View the Billboard Hot 100 Project](./Billboard-Hot-100-Modeling)
 
@@ -32,7 +32,7 @@ Analyzed Pfizer-BioNTech BNT162b2 vaccine efficacy using both frequentist and Ba
 
 **Project Context:** Three-person statistical analysis project completed for Introduction to Probability and Mathematical Statistics III course (STAT 342).
 
-**Skills:** R, statistical inference, Bayesian analysis, maximum likelihood estimation, hypothesis testing, sensitivity analysis, data visualization
+**Skills:** R, R Markdown, statistical inference, Bayesian analysis, maximum likelihood estimation, hypothesis testing, sensitivity analysis, data visualization
 
 [View the Pfizer Vaccine Efficacy Project](./Pfizer-Biotech-Efficacy)
 
@@ -54,7 +54,7 @@ Built a logistic regression model in R to analyze borrower characteristics assoc
 
 **Project Context:** Individual logistic regression project completed for Elements of Statistical Methods course (STAT 311).
 
-**Skills:** R, logistic regression, variable selection, data visualization, model interpretation
+**Skills:** R, R Markdown, logistic regression, variable selection, data visualization, model interpretation
 
 [View the Loan Default Analysis Project](./Loan-Default-Analysis)
 
