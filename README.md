@@ -1,6 +1,10 @@
 # Data Analytics and Programming Portfolio
 
-Welcome to my project portfolio. I am a Statistics student in the Data Science track at the University of Washington with experience in R, Python, and Java, including statistical modeling, data visualization, and object-oriented programming. I am passionate about using data to uncover meaningful insights and building practical applications that combine analytics, AI tools, and interactive technologies to solve real-world problems!
+Welcome to my project portfolio! I am a Statistics student in the Data Science track at the University of Washington with experience in R, Python, and Java, including statistical modeling, data visualization, and object-oriented programming.
+
+I am passionate about transforming complex data into meaningful insights through research, statistical analysis, and effective visual communication. I am particularly interested in creating interactive dashboards, visualizations, and presentations that are tailored to different audiences, making data more accessible and actionable. I am also eager to further develop my skills in predictive modeling to help identify patterns, anticipate outcomes, and support informed decision-making.
+
+I hope to apply these interests across the sports, business, and technology industries, where data can play an important role in understanding challenges and identifying opportunities for improvement.
 
 ## Projects
 
